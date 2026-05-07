@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observatorio del Crédito · Uruguay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:wght@300;400;500&family=Epilogue:ital,wght@1,300&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+–bg: #0a0a0f;
+–surface: #111118;
+–border: rgba(255,255,255,0.07);
+–border-bright: rgba(255,255,255,0.14);
+–text: #e8e6f0;
+–muted: rgba(232,230,240,0.45);
+–dim: rgba(232,230,240,0.22);
+–accent: #6be8a0;
+–accent-dim: rgba(107,232,160,0.12);
+–accent-glow: rgba(107,232,160,0.25);
+–warn: #f5a623;
+–sans: ‘Epilogue’, sans-serif;
+–display: ‘Syne’, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: var(–sans);
+font-size: 16px;
+line-height: 1.6;
+overflow-x: hidden;
+cursor: default;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 256 256’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘noise’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23noise)’ opacity=‘0.04’/%3E%3C/svg%3E”);
+pointer-events: none;
+z-index: 1000;
+opacity: 0.6;
+}
+
+/* ── NAV ── */
+nav {
+position: fixed;
+top: 0; left: 0; right: 0;
+z-index: 100;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 40px;
+height: 60px;
+border-bottom: 1px solid var(–border);
+background: rgba(10,10,15,0.85);
+backdrop-filter: blur(20px);
+}
+
+.nav-logo {
+font-family: var(–display);
+font-size: 13px;
+font-weight: 700;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(–text);
+}
+
+.nav-logo span {
+color: var(–accent);
+}
+
+.nav-right {
+display: flex;
+align-items: center;
+gap: 32px;
+}
+
+.nav-pill {
+display: flex;
+align-items: center;
+gap: 7px;
+background: var(–accent-dim);
+border: 1px solid rgba(107,232,160,0.2);
+border-radius: 100px;
+padding: 5px 12px;
+font-size: 11px;
+font-weight: 500;
+color: var(–accent);
+letter-spacing: 0.06em;
+}
+
+.pulse {
+width: 6px; height: 6px;
+border-radius: 50%;
+background: var(–accent);
+animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+0%,100% { opacity:1; transform: scale(1); }
+50% { opacity:0.4; transform: scale(0.7); }
+}
+
+.nav-cta {
+font-family: var(–display);
+font-size: 12px;
+font-weight: 600;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(–bg);
+background: var(–accent);
+padding: 8px 20px;
+text-decoration: none;
+transition: opacity 0.2s;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ── HERO ── */
+.hero {
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: flex-end;
+padding: 140px 40px 60px;
+position: relative;
+overflow: hidden;
+}
+
+/* Background grid */
+.hero::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+background-image:
+linear-gradient(var(–border) 1px, transparent 1px),
+linear-gradient(90deg, var(–border) 1px, transparent 1px);
+background-size: 60px 60px;
+mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* Glow orb */
+.hero::after {
+content: ‘’;
+position: absolute;
+top: -200px; left: 50%;
+transform: translateX(-50%);
+width: 800px; height: 600px;
+background: radial-gradient(ellipse, rgba(107,232,160,0.06) 0%, transparent 70%);
+pointer-events: none;
+}
+
+.hero-label {
+font-family: var(–display);
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(–accent);
+margin-bottom: 28px;
+display: flex;
+align-items: center;
+gap: 12px;
+position: relative;
+z-index: 2;
+animation: fadeUp 0.8s ease both;
+}
+
+.hero-label::before {
+content: ‘’;
+width: 32px; height: 1px;
+background: var(–accent);
+}
+
+.hero-headline {
+font-family: var(–display);
+font-size: clamp(52px, 8vw, 110px);
+font-weight: 800;
+line-height: 0.95;
+letter-spacing: -0.03em;
+position: relative;
+z-index: 2;
+animation: fadeUp 0.8s ease 0.1s both;
+}
+
+.hero-headline .line2 {
+color: var(–muted);
+}
+
+.hero-headline .accent-word {
+color: var(–accent);
+font-style: italic;
+font-weight: 700;
+}
+
+.hero-bottom {
+display: flex;
+align-items: flex-end;
+justify-content: space-between;
+margin-top: 48px;
+padding-top: 32px;
+border-top: 1px solid var(–border);
+position: relative;
+z-index: 2;
+animation: fadeUp 0.8s ease 0.2s both;
+gap: 40px;
+flex-wrap: wrap;
+}
+
+.hero-desc {
+font-size: 16px;
+color: var(–muted);
+line-height: 1.7;
+max-width: 400px;
+font-weight: 300;
+}
+
+.hero-desc strong {
+color: var(–text);
+font-weight: 500;
+}
+
+.hero-actions {
+display: flex;
+flex-direction: column;
+align-items: flex-end;
+gap: 12px;
+}
+
+.btn-main {
+font-family: var(–display);
+font-size: 13px;
+font-weight: 700;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–bg);
+background: var(–accent);
+padding: 16px 36px;
+text-decoration: none;
+display: inline-block;
+transition: all 0.2s;
+position: relative;
+overflow: hidden;
+}
+
+.btn-main::after {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: white;
+opacity: 0;
+transition: opacity 0.15s;
+}
+.btn-main:hover::after { opacity: 0.12; }
+
+.btn-sub {
+font-size: 11px;
+color: var(–dim);
+letter-spacing: 0.06em;
+}
+
+/* ── STATS STRIP ── */
+.stats-strip {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+border-top: 1px solid var(–border);
+border-bottom: 1px solid var(–border);
+animation: fadeUp 0.8s ease 0.3s both;
+}
+
+.stat-block {
+padding: 36px 32px;
+border-right: 1px solid var(–border);
+position: relative;
+overflow: hidden;
+transition: background 0.3s;
+}
+
+.stat-block:hover {
+background: var(–accent-dim);
+}
+
+.stat-block:last-child { border-right: none; }
+
+.stat-block::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 2px;
+background: var(–accent);
+transform: scaleX(0);
+transform-origin: left;
+transition: transform 0.4s ease;
+}
+
+.stat-block:hover::before {
+transform: scaleX(1);
+}
+
+.stat-num {
+font-family: var(–display);
+font-size: 48px;
+font-weight: 800;
+line-height: 1;
+letter-spacing: -0.03em;
+color: var(–text);
+margin-bottom: 6px;
+}
+
+.stat-num sup {
+font-size: 22px;
+color: var(–accent);
+vertical-align: super;
+}
+
+.stat-tag {
+font-size: 11px;
+font-weight: 500;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 8px;
+font-family: var(–display);
+}
+
+.stat-desc {
+font-size: 12px;
+color: var(–dim);
+line-height: 1.5;
+}
+
+/* ── SECTION HEADER ── */
+.section-head {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 20px 40px;
+border-bottom: 1px solid var(–border);
+}
+
+.section-label {
+font-family: var(–display);
+font-size: 10px;
+font-weight: 700;
+letter-spacing: 0.22em;
+text-transform: uppercase;
+color: var(–dim);
+}
+
+.section-num {
+font-family: var(–display);
+font-size: 10px;
+color: var(–dim);
+letter-spacing: 0.1em;
+}
+
+/* ── ABOUT ── */
+.about {
+display: grid;
+grid-template-columns: 1fr 1fr;
+border-bottom: 1px solid var(–border);
+}
+
+.about-left {
+padding: 72px 40px 72px 40px;
+border-right: 1px solid var(–border);
+display: flex;
+flex-direction: column;
+gap: 32px;
+}
+
+.about-left h2 {
+font-family: var(–display);
+font-size: clamp(28px, 3.5vw, 44px);
+font-weight: 800;
+line-height: 1.1;
+letter-spacing: -0.025em;
+}
+
+.about-left h2 em {
+font-style: italic;
+color: var(–muted);
+font-weight: 700;
+}
+
+.about-left p {
+font-size: 15px;
+color: var(–muted);
+line-height: 1.8;
+font-weight: 300;
+max-width: 440px;
+}
+
+.about-left p strong {
+color: var(–text);
+font-weight: 500;
+}
+
+.about-right {
+padding: 72px 40px;
+display: flex;
+flex-direction: column;
+gap: 0;
+}
+
+.promise-row {
+display: flex;
+gap: 20px;
+padding: 24px 0;
+border-bottom: 1px solid var(–border);
+align-items: flex-start;
+transition: background 0.2s;
+}
+
+.promise-row:first-child { padding-top: 0; }
+.promise-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.promise-row:hover {
+padding-left: 8px;
+}
+
+.p-icon {
+width: 36px; height: 36px;
+border: 1px solid var(–border-bright);
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 15px;
+flex-shrink: 0;
+background: var(–surface);
+transition: border-color 0.2s, background 0.2s;
+}
+
+.promise-row:hover .p-icon {
+border-color: var(–accent);
+background: var(–accent-dim);
+}
+
+.p-text strong {
+display: block;
+font-family: var(–display);
+font-size: 13px;
+font-weight: 700;
+letter-spacing: 0.04em;
+margin-bottom: 4px;
+color: var(–text);
+}
+
+.p-text span {
+font-size: 13px;
+color: var(–muted);
+line-height: 1.5;
+font-weight: 300;
+}
+
+/* ── SURVEY ── */
+.survey-wrap {
+display: grid;
+grid-template-columns: 1fr 480px;
+border-bottom: 1px solid var(–border);
+min-height: 620px;
+}
+
+.survey-left {
+padding: 72px 40px;
+border-right: 1px solid var(–border);
+display: flex;
+flex-direction: column;
+gap: 40px;
+}
+
+.survey-left h2 {
+font-family: var(–display);
+font-size: clamp(32px, 4vw, 52px);
+font-weight: 800;
+line-height: 1.05;
+letter-spacing: -0.03em;
+}
+
+.survey-left h2 span { color: var(–accent); }
+
+.survey-left p {
+font-size: 15px;
+color: var(–muted);
+line-height: 1.8;
+font-weight: 300;
+max-width: 400px;
+}
+
+.prize-strip {
+border: 1px solid var(–border);
+background: var(–surface);
+padding: 24px;
+}
+
+.prize-strip-label {
+font-family: var(–display);
+font-size: 9px;
+font-weight: 700;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(–accent);
+margin-bottom: 14px;
+}
+
+.prizes {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+margin-bottom: 14px;
+}
+
+.prize {
+background: rgba(255,255,255,0.04);
+border: 1px solid var(–border-bright);
+padding: 6px 14px;
+font-size: 12px;
+color: var(–muted);
+letter-spacing: 0.03em;
+transition: border-color 0.2s, color 0.2s;
+}
+
+.prize:hover {
+border-color: var(–accent);
+color: var(–accent);
+}
+
+.prize-note {
+font-size: 11px;
+color: var(–dim);
+line-height: 1.5;
+}
+
+/* ── FORM PANEL ── */
+.form-panel {
+background: var(–surface);
+border-left: 1px solid var(–border);
+display: flex;
+flex-direction: column;
+overflow: hidden;
+}
+
+.fp-header {
+padding: 20px 28px;
+border-bottom: 1px solid var(–border);
+display: flex;
+align-items: center;
+gap: 16px;
+}
+
+.fp-step-info {
+font-family: var(–display);
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.1em;
+color: var(–dim);
+flex-shrink: 0;
+}
+
+.fp-bar {
+flex: 1;
+height: 2px;
+background: rgba(255,255,255,0.07);
+position: relative;
+overflow: hidden;
+}
+
+.fp-bar-fill {
+position: absolute;
+top: 0; left: 0; bottom: 0;
+background: var(–accent);
+transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+box-shadow: 0 0 12px var(–accent-glow);
+}
+
+.fp-pct {
+font-family: var(–display);
+font-size: 11px;
+font-weight: 700;
+color: var(–accent);
+flex-shrink: 0;
+min-width: 32px;
+text-align: right;
+}
+
+.fp-body {
+padding: 36px 28px;
+flex: 1;
+display: flex;
+flex-direction: column;
+transition: opacity 0.25s;
+}
+
+.fp-category {
+font-family: var(–display);
+font-size: 9px;
+font-weight: 700;
+letter-spacing: 0.22em;
+text-transform: uppercase;
+color: var(–accent);
+margin-bottom: 16px;
+}
+
+.fp-question {
+font-family: var(–display);
+font-size: 20px;
+font-weight: 700;
+line-height: 1.25;
+letter-spacing: -0.01em;
+margin-bottom: 28px;
+flex: 1;
+}
+
+.fp-options {
+display: flex;
+flex-direction: column;
+gap: 8px;
+margin-bottom: 28px;
+}
+
+.fp-option {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 13px 16px;
+border: 1px solid var(–border);
+cursor: pointer;
+font-size: 13px;
+color: var(–muted);
+transition: all 0.15s;
+background: transparent;
+user-select: none;
+}
+
+.fp-option:hover {
+border-color: var(–border-bright);
+color: var(–text);
+background: rgba(255,255,255,0.02);
+}
+
+.fp-option.active {
+border-color: var(–accent);
+color: var(–text);
+background: var(–accent-dim);
+}
+
+.fp-radio {
+width: 16px; height: 16px;
+border: 1px solid rgba(255,255,255,0.2);
+border-radius: 50%;
+flex-shrink: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.15s;
+}
+
+.fp-option.active .fp-radio {
+border-color: var(–accent);
+background: var(–accent);
+}
+
+.fp-option.active .fp-radio::after {
+content: ‘’;
+width: 5px; height: 5px;
+border-radius: 50%;
+background: var(–bg);
+}
+
+.fp-nav {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding-top: 20px;
+border-top: 1px solid var(–border);
+}
+
+.fp-back {
+font-family: var(–display);
+font-size: 10px;
+font-weight: 700;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–dim);
+background: none;
+border: none;
+cursor: pointer;
+transition: color 0.15s;
+}
+.fp-back:hover { color: var(–muted); }
+
+.fp-next {
+font-family: var(–display);
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–bg);
+background: var(–accent);
+border: none;
+padding: 11px 24px;
+cursor: pointer;
+transition: opacity 0.15s;
+}
+.fp-next:hover { opacity: 0.85; }
+
+.fp-lock {
+padding: 14px 28px;
+border-top: 1px solid var(–border);
+display: flex;
+align-items: center;
+gap: 8px;
+background: rgba(107,232,160,0.04);
+}
+
+.fp-lock-icon {
+color: var(–accent);
+font-size: 11px;
+}
+
+.fp-lock-text {
+font-size: 10px;
+color: var(–dim);
+letter-spacing: 0.05em;
+}
+
+/* ── FINDINGS ── */
+.findings {
+padding: 80px 40px;
+border-bottom: 1px solid var(–border);
+}
+
+.findings-head {
+display: flex;
+align-items: baseline;
+justify-content: space-between;
+margin-bottom: 48px;
+}
+
+.findings-head h2 {
+font-family: var(–display);
+font-size: clamp(28px, 4vw, 48px);
+font-weight: 800;
+letter-spacing: -0.03em;
+}
+
+.findings-head-meta {
+font-size: 11px;
+color: var(–dim);
+letter-spacing: 0.08em;
+font-family: var(–display);
+}
+
+.findings-grid {
+display: grid;
+grid-template-columns: 2fr 1fr 1fr;
+grid-template-rows: 1fr 1fr;
+gap: 1px;
+background: var(–border);
+border: 1px solid var(–border);
+}
+
+.finding-card {
+background: var(–bg);
+padding: 36px 32px;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+transition: background 0.3s;
+cursor: default;
+}
+
+.finding-card:hover {
+background: var(–surface);
+}
+
+.finding-card.large {
+grid-row: span 2;
+padding: 48px 40px;
+}
+
+.finding-pct {
+font-family: var(–display);
+font-size: 72px;
+font-weight: 800;
+letter-spacing: -0.04em;
+line-height: 1;
+color: var(–text);
+}
+
+.finding-card.large .finding-pct {
+font-size: 120px;
+}
+
+.finding-pct .unit {
+font-size: 0.45em;
+color: var(–accent);
+vertical-align: super;
+}
+
+.finding-label {
+font-size: 13px;
+color: var(–muted);
+line-height: 1.5;
+margin-top: 16px;
+font-weight: 300;
+}
+
+.finding-tag {
+font-family: var(–display);
+font-size: 9px;
+font-weight: 700;
+letter-spacing: 0.16em;
+text-transform: uppercase;
+color: var(–dim);
+margin-bottom: 12px;
+}
+
+/* ── METHOD ── */
+.method {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+border-bottom: 1px solid var(–border);
+}
+
+.method-block {
+padding: 48px 40px;
+border-right: 1px solid var(–border);
+position: relative;
+}
+
+.method-block:last-child { border-right: none; }
+
+.method-num {
+font-family: var(–display);
+font-size: 80px;
+font-weight: 800;
+color: var(–accent);
+opacity: 0.08;
+line-height: 1;
+margin-bottom: -16px;
+letter-spacing: -0.04em;
+}
+
+.method-title {
+font-family: var(–display);
+font-size: 16px;
+font-weight: 700;
+letter-spacing: -0.01em;
+margin-bottom: 12px;
+}
+
+.method-body {
+font-size: 13px;
+color: var(–muted);
+line-height: 1.7;
+font-weight: 300;
+}
+
+/* ── FOOTER ── */
+footer {
+border-top: 1px solid var(–border);
+}
+
+.footer-main {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+border-bottom: 1px solid var(–border);
+}
+
+.footer-col {
+padding: 48px 40px;
+border-right: 1px solid var(–border);
+}
+
+.footer-col:last-child { border-right: none; }
+
+.footer-brand {
+font-family: var(–display);
+font-size: 18px;
+font-weight: 800;
+letter-spacing: -0.01em;
+margin-bottom: 12px;
+}
+
+.footer-brand span { color: var(–accent); }
+
+.footer-sub {
+font-size: 12px;
+color: var(–dim);
+line-height: 1.7;
+}
+
+.footer-links {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.footer-links a {
+font-size: 12px;
+color: var(–muted);
+text-decoration: none;
+letter-spacing: 0.03em;
+transition: color 0.15s;
+font-weight: 300;
+}
+.footer-links a:hover { color: var(–text); }
+
+.footer-legal {
+font-size: 11px;
+color: var(–dim);
+line-height: 1.7;
+}
+
+.footer-legal a { color: var(–dim); }
+
+.footer-bottom {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 18px 40px;
+}
+
+.footer-copy {
+font-size: 11px;
+color: var(–dim);
+letter-spacing: 0.06em;
+}
+
+.powered {
+font-family: var(–display);
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.1em;
+color: var(–dim);
+}
+
+.powered strong { color: var(–accent); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(24px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+opacity: 0;
+transform: translateY(20px);
+transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.in {
+opacity: 1;
+transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+nav { padding: 0 20px; }
+.hero { padding: 120px 20px 48px; }
+.stats-strip { grid-template-columns: 1fr 1fr; }
+.stat-block { border-bottom: 1px solid var(–border); }
+.about { grid-template-columns: 1fr; }
+.about-left { border-right: none; border-bottom: 1px solid var(–border); }
+.survey-wrap { grid-template-columns: 1fr; }
+.survey-left { border-right: none; border-bottom: 1px solid var(–border); }
+.form-panel { border-left: none; }
+.findings-grid { grid-template-columns: 1fr 1fr; }
+.finding-card.large { grid-row: span 1; }
+.finding-card.large .finding-pct { font-size: 72px; }
+.method { grid-template-columns: 1fr; }
+.method-block { border-right: none; border-bottom: 1px solid var(–border); }
+.footer-main { grid-template-columns: 1fr; }
+.footer-col { border-right: none; border-bottom: 1px solid var(–border); }
+.section-head { padding: 16px 20px; }
+.about-left, .about-right, .survey-left, .findings, .method-block, .footer-col, .footer-bottom { padding-left: 20px; padding-right: 20px; }
+.footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+.findings-head { flex-direction: column; gap: 8px; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- NAV -->
+
+<nav>
+<div class="nav-logo">Observatorio<span>.</span>uy</div>
+<div class="nav-right">
+<div class="nav-pill">
+<span class="pulse"></span>
+Recolección activa
+</div>
+<a href="#encuesta" class="nav-cta">Participar</a>
+</div>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+<p class="hero-label">Estudio de acceso al crédito · Uruguay 2025</p>
+<h1 class="hero-headline">
+El crédito<br>
+<span class="line2">que <span class="accent-word">Uruguay</span></span><br>
+<span class="line2">no consigue</span>
+</h1>
+<div class="hero-bottom">
+<p class="hero-desc">
+Estamos mapeando la experiencia real de miles de uruguayos con el sistema crediticio.
+<strong>No queremos vender nada.</strong> Queremos entender qué está pasando y publicar los resultados.
+</p>
+<div class="hero-actions">
+<a href="#encuesta" class="btn-main">Compartir mi experiencia →</a>
+<span class="btn-sub">3 minutos · anónimo · resultados públicos jul 2025</span>
+</div>
+</div>
+</section>
+
+<!-- STATS STRIP -->
+
+<div class="stats-strip reveal">
+<div class="stat-block">
+<p class="stat-tag">Rechazos</p>
+<p class="stat-num">6<sup>de 10</sup></p>
+<p class="stat-desc">no obtienen crédito en el primer intento</p>
+</div>
+<div class="stat-block">
+<p class="stat-tag">Sin explicación</p>
+<p class="stat-num">72<sup>%</sup></p>
+<p class="stat-desc">nunca recibe un motivo claro de rechazo</p>
+</div>
+<div class="stat-block">
+<p class="stat-tag">Alternativas informales</p>
+<p class="stat-num">43<sup>%</sup></p>
+<p class="stat-desc">recurrió a financiamiento fuera del sistema formal</p>
+</div>
+<div class="stat-block">
+<p class="stat-tag">Respuestas recibidas</p>
+<p class="stat-num">312<sup>+</sup></p>
+<p class="stat-desc">participantes registrados · objetivo: 1.000</p>
+</div>
+</div>
+
+<!-- ABOUT -->
+
+<div class="section-head reveal">
+<span class="section-label">§ 01 — Sobre el estudio</span>
+<span class="section-num">OC/UY/2025</span>
+</div>
+
+<section class="about reveal">
+<div class="about-left">
+<h2>El sistema tiene un problema.<br><em>Nadie lo está midiendo.</em></h2>
+<p>
+Miles de uruguayos solicitan crédito cada mes. Muchos son rechazados
+<strong>sin entender por qué</strong>. Otros acceden a condiciones que
+no comprenden. El Observatorio del Crédito nació para documentar
+estas experiencias y publicar los hallazgos de forma completamente abierta.
+</p>
+<p>
+No somos una institución de crédito. Somos un proyecto de investigación
+aplicada. <strong>Tu experiencia es el dato.</strong>
+</p>
+</div>
+<div class="about-right">
+<div class="promise-row">
+<div class="p-icon">🔒</div>
+<div class="p-text">
+<strong>100% anónimo</strong>
+<span>Tus respuestas no se vinculan a tu identidad. Los datos de contacto del sorteo se guardan por separado y con protocolo diferente.</span>
+</div>
+</div>
+<div class="promise-row">
+<div class="p-icon">📊</div>
+<div class="p-text">
+<strong>Resultados publicados</strong>
+<span>El informe completo con metodología estará disponible públicamente en julio 2025. Sin costo, sin registro.</span>
+</div>
+</div>
+<div class="promise-row">
+<div class="p-icon">⏱</div>
+<div class="p-text">
+<strong>3 minutos máximo</strong>
+<span>8 preguntas. Diseñado para ser corto y sin rodeos. Sin preguntas innecesarias.</span>
+</div>
+</div>
+<div class="promise-row">
+<div class="p-icon">🚫</div>
+<div class="p-text">
+<strong>No te vamos a llamar</strong>
+<span>A menos que des autorización expresa para el sorteo. Nunca con fines comerciales sin consentimiento.</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SURVEY -->
+
+<div class="section-head reveal">
+<span class="section-label">§ 02 — Participar</span>
+<span class="section-num">Encuesta + Sorteo</span>
+</div>
+
+<section class="survey-wrap" id="encuesta">
+<div class="survey-left reveal">
+<h2>Tu experiencia<br><span>vale algo real.</span></h2>
+<p>
+Contanos qué viviste con el crédito en Uruguay. No hay respuestas
+correctas ni incorrectas. Solo queremos entender lo que pasa de verdad.
+</p>
+<div class="prize-strip">
+<p class="prize-strip-label">Sorteo entre participantes verificados</p>
+<div class="prizes">
+<span class="prize">🛒 Vale supermercado $2.000</span>
+<span class="prize">⛽ Combustible $1.500</span>
+<span class="prize">📱 Crédito servicios $1.000</span>
+<span class="prize">💵 Efectivo $1.500</span>
+<span class="prize">× 5 premios</span>
+</div>
+<p class="prize-note">Participación en sorteo es opcional. Requiere verificación de número de celular (OTP). Un registro por persona.</p>
+</div>
+</div>
+
+<!-- INTERACTIVE FORM -->
+
+<div class="form-panel">
+<div class="fp-header">
+<span class="fp-step-info" id="step-counter">1 / 8</span>
+<div class="fp-bar">
+<div class="fp-bar-fill" id="bar-fill" style="width: 12%"></div>
+</div>
+<span class="fp-pct" id="bar-pct">12%</span>
+</div>
+
+```
+<div class="fp-body" id="fp-body">
+<p class="fp-category" id="fp-cat">Contexto general</p>
+<p class="fp-question" id="fp-q">¿Solicitaste algún tipo de crédito en Uruguay en los últimos 12 meses?</p>
+<div class="fp-options" id="fp-opts"></div>
+<div class="fp-nav">
+<button class="fp-back" onclick="prevQ()">← Atrás</button>
+<button class="fp-next" onclick="nextQ()">Siguiente →</button>
+</div>
+</div>
+
+<div class="fp-lock">
+<span class="fp-lock-icon">🔐</span>
+<span class="fp-lock-text">Respuestas anónimas · Sin datos personales en este paso</span>
+</div>
+```
+
+</div>
+</section>
+
+<!-- FINDINGS -->
+
+<div class="section-head reveal">
+<span class="section-label">§ 03 — Hallazgos preliminares</span>
+<span class="section-num">n=312 · No representativos · Mayo 2025</span>
+</div>
+
+<section class="findings reveal">
+<div class="findings-head">
+<h2>Lo que estamos encontrando</h2>
+<span class="findings-head-meta">Datos parciales · Muestra sin ponderar</span>
+</div>
+
+<div class="findings-grid">
+<div class="finding-card large">
+<div>
+<p class="finding-tag">Rechazos en último año</p>
+<p class="finding-pct">58<span class="unit">%</span></p>
+</div>
+<p class="finding-label">de los participantes fue rechazado al menos una vez al solicitar un crédito en los últimos 12 meses en Uruguay</p>
+</div>
+<div class="finding-card">
+<div>
+<p class="finding-tag">Sin explicación</p>
+<p class="finding-pct">71<span class="unit">%</span></p>
+</div>
+<p class="finding-label">no recibió ningún motivo claro de parte de la institución</p>
+</div>
+<div class="finding-card">
+<div>
+<p class="finding-tag">Urgencia alta</p>
+<p class="finding-pct">64<span class="unit">%</span></p>
+</div>
+<p class="finding-label">necesitaba el dinero para emergencias o gastos del hogar</p>
+</div>
+<div class="finding-card">
+<div>
+<p class="finding-tag">Reintentó</p>
+<p class="finding-pct">81<span class="unit">%</span></p>
+</div>
+<p class="finding-label">volvió a intentar conseguir crédito en otra institución</p>
+</div>
+<div class="finding-card">
+<div>
+<p class="finding-tag">Vía informal</p>
+<p class="finding-pct">43<span class="unit">%</span></p>
+</div>
+<p class="finding-label">recurrió a crédito informal al no acceder al sistema formal</p>
+</div>
+</div>
+</section>
+
+<!-- METHOD -->
+
+<div class="section-head reveal">
+<span class="section-label">§ 04 — Metodología</span>
+<span class="section-num">Diseño · Calidad · Publicación</span>
+</div>
+
+<section class="method reveal">
+<div class="method-block">
+<div class="method-num">01</div>
+<h3 class="method-title">Diseño del estudio</h3>
+<p class="method-body">Cuestionario de 8 preguntas con variables seleccionadas por su poder predictivo. Cada pregunta genera una dimensión analítica sobre barreras de acceso, experiencia emocional y comportamiento post-rechazo.</p>
+</div>
+<div class="method-block">
+<div class="method-num">02</div>
+<h3 class="method-title">Calidad de muestra</h3>
+<p class="method-body">Filtros de coherencia interna, tiempo mínimo por respuesta, detección de duplicados y validación de dispositivo. Las respuestas inconsistentes se excluyen del análisis. Verificación OTP para el sorteo.</p>
+</div>
+<div class="method-block">
+<div class="method-num">03</div>
+<h3 class="method-title">Publicación abierta</h3>
+<p class="method-body">El informe completo con datos agregados, metodología y limitaciones se publicará en julio 2025. Cualquier medio, investigador o institución puede acceder, citar y reproducir los resultados sin restricción.</p>
+</div>
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+<div class="footer-main">
+<div class="footer-col">
+<p class="footer-brand">Observatorio<span>.</span>uy</p>
+<p class="footer-sub">
+Estudio de acceso al crédito · Uruguay 2025<br>
+Investigación aplicada sobre el sistema crediticio uruguayo<br><br>
+Iniciativa impulsada por <strong style="color:var(--muted)">Credizona</strong>
+</p>
+</div>
+<div class="footer-col">
+<div class="footer-links">
+<a href="#">Metodología del estudio</a>
+<a href="#">Política de privacidad</a>
+<a href="#">Bases y condiciones del sorteo</a>
+<a href="#">Solicitar eliminación de datos</a>
+<a href="#">Prensa e instituciones</a>
+<a href="#">Contacto</a>
+</div>
+</div>
+<div class="footer-col">
+<p class="footer-legal">
+Tratamiento de datos personales bajo <strong>Ley 18.331</strong> de protección de datos
+personales de Uruguay. Responsable registrado ante URCDP.<br><br>
+Datos recopilados exclusivamente para investigación académica y publicación abierta.
+No se venden datos individuales a terceros.<br><br>
+Contacto privacidad: <a href="#">privacidad@observatorio.uy</a>
+</p>
+</div>
+</div>
+<div class="footer-bottom">
+<span class="footer-copy">© 2025 Observatorio del Crédito Uruguay</span>
+<span class="powered">Impulsado por <strong>CREDIZONA</strong></span>
+</div>
+</footer>
+
+<script>
+// ── FORM DATA ──
+const steps = [
+{ cat: 'Contexto general', q: '¿Solicitaste algún tipo de crédito en Uruguay en los últimos 12 meses?', opts: ['Sí, solicité crédito', 'Lo consideré pero no llegué a solicitar', 'No lo necesité en ese período'] },
+{ cat: 'Tipo de crédito', q: '¿Qué tipo de crédito buscabas principalmente?', opts: ['Préstamo personal o de consumo', 'Tarjeta de crédito', 'Crédito hipotecario', 'Crédito para negocio o emprendimiento', 'Otro tipo'] },
+{ cat: 'Resultado', q: '¿Cuál fue el resultado de tu solicitud más reciente?', opts: ['Aprobada sin problemas', 'Aprobada con condiciones distintas a las esperadas', 'Rechazada', 'Sigue pendiente'] },
+{ cat: 'Información recibida', q: '¿Recibiste una explicación clara del resultado?', opts: ['Sí, entendí perfectamente los motivos', 'Recibí algo de información pero fue insuficiente', 'No me explicaron nada', 'No me importó conocer el motivo'] },
+{ cat: 'Experiencia emocional', q: '¿Qué describe mejor lo que sentiste durante el proceso?', opts: ['Frustración o enojo', 'Confusión o incertidumbre', 'Tranquilidad o indiferencia', 'Alivio o satisfacción', 'Vergüenza o incomodidad'] },
+{ cat: 'Urgencia', q: '¿Cuánta urgencia tenías respecto al crédito en ese momento?', opts: ['Era urgente, lo necesitaba de inmediato', 'Era importante pero podía esperar algunas semanas', 'Era una decisión planificada sin urgencia particular'] },
+{ cat: 'Alternativas', q: 'Si no obtuviste el crédito que buscabas, ¿qué hiciste?', opts: ['Busqué en otra institución financiera', 'Recurrí a familia o amigos', 'Usé una financiera o crédito informal', 'No resolví la necesidad', 'Sí obtuve el crédito que buscaba'] },
+{ cat: 'Mejora del sistema', q: '¿Qué cambiaría más tu experiencia con el sistema de crédito?', opts: ['Más transparencia y explicaciones claras', 'Menos burocracia y mayor velocidad', 'Criterios de aprobación más flexibles', 'Mejores tasas y condiciones', 'Mayor acceso para sin historial crediticio'] }
+];
+
+let cur = 0;
+let sel = new Array(steps.length).fill(null);
+
+function render() {
+const s = steps[cur];
+document.getElementById('fp-cat').textContent = s.cat;
+document.getElementById('fp-q').textContent = s.q;
+document.getElementById('step-counter').textContent = `${cur+1} / ${steps.length}`;
+const pct = Math.round(((cur+1)/steps.length)*100);
+document.getElementById('bar-fill').style.width = pct + '%';
+document.getElementById('bar-pct').textContent = pct + '%';
+
+const opts = document.getElementById('fp-opts');
+opts.innerHTML = '';
+s.opts.forEach((o, i) => {
+const d = document.createElement('div');
+d.className = 'fp-option' + (sel[cur] === i ? ' active' : '');
+d.innerHTML = `<div class="fp-radio"></div>${o}`;
+if (sel[cur] === i) {
+d.querySelector('.fp-radio').style.borderColor = 'var(--accent)';
+d.querySelector('.fp-radio').style.background = 'var(--accent)';
+}
+d.onclick = () => {
+sel[cur] = i;
+document.querySelectorAll('.fp-option').forEach((el, j) => {
+const active = j === i;
+el.classList.toggle('active', active);
+const r = el.querySelector('.fp-radio');
+r.style.borderColor = active ? 'var(--accent)' : '';
+r.style.background = active ? 'var(--accent)' : '';
+});
+};
+opts.appendChild(d);
+});
+}
+
+function nextQ() {
+if (cur < steps.length - 1) {
+cur++;
+const b = document.getElementById('fp-body');
+b.style.opacity = '0';
+setTimeout(() => { render(); b.style.opacity = '1'; }, 200);
+} else {
+document.getElementById('fp-body').innerHTML = `
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:20px;padding:20px 0;">
+<div style="width:56px;height:56px;border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent);">✓</div>
+<div>
+<p style="font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;">¡Gracias!</p>
+<p style="font-size:13px;color:var(--muted);line-height:1.7;font-weight:300;">Tus respuestas fueron registradas de forma anónima.<br>Resultados publicados en julio 2025.</p>
+</div>
+<div style="width:100%;border:1px solid var(--border);padding:20px;background:var(--bg);margin-top:8px;">
+<p style="font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;">¿Querés entrar al sorteo?</p>
+<input type="tel" placeholder="Número de celular (opcional)" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:12px 14px;font-size:13px;color:var(--text);font-family:var(--sans);outline:none;margin-bottom:10px;">
+<button onclick="alert('Aquí iría la validación OTP')" style="width:100%;background:var(--accent);color:var(--bg);font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;border:none;padding:13px;cursor:pointer;">Verificar y participar →</button>
+<p style="font-size:10px;color:var(--dim);margin-top:10px;line-height:1.5;">Solo para el sorteo · Sin llamados comerciales · Un registro por persona</p>
+</div>
+</div>
+`;
+}
+}
+
+function prevQ() {
+if (cur > 0) {
+cur--;
+const b = document.getElementById('fp-body');
+b.style.opacity = '0';
+setTimeout(() => { render(); b.style.opacity = '1'; }, 200);
+}
+}
+
+render();
+
+// ── SCROLL REVEAL ──
+const obs = new IntersectionObserver(entries => {
+entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
